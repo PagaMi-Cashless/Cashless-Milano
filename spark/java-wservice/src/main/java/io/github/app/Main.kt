@@ -7,6 +7,7 @@ import graphql.GraphQL
 import com.mongodb.util.JSON
 import io.github.app.conf.ConfigKey
 import io.github.app.conf.ConfigManager
+import io.github.app.schema.TodoSchema
 
 object Main
 {
@@ -35,7 +36,7 @@ object Main
 
     }
 
-    private fun corsHeaderOptions(request: Request, response: Response)
+    private fun corsHeaderOptions(request: Request, response: Response): String
     {
         val accessControlRequestHeaders = request.headers("Access-Control-Request-Headers")
         val accessControlRequestMethod = request.headers("Access-Control-Request-Method")
@@ -48,11 +49,10 @@ object Main
             response.header("Access-Control-Allow-Methods", accessControlRequestMethod)
         }
 
-        // Return "OK"
-        "OK"
+        return "OK"
     }
 
-    private fun graphQlSerialize(request: Request, response: Response)
+    private fun graphQlSerialize(request: Request, response: Response): String
     {
         // Get the schema instance
         val graphql = GraphQL(TodoSchema.schema)
@@ -61,6 +61,6 @@ object Main
         response.type("application/json")
 
         // Execute the GraphQL query, serialize and return the packed response
-        JSON.serialize(graphql.execute(request.body()).data)
+        return JSON.serialize(graphql.execute(request.body()).data)
     }
 }

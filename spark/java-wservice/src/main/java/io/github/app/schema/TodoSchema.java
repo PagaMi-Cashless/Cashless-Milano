@@ -1,9 +1,11 @@
-package io.github.app;
+package io.github.app.schema;
 
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
+import io.github.app.schema.TodoData;
+
 import static graphql.Scalars.GraphQLString;
 import static graphql.Scalars.GraphQLBoolean;
 import static graphql.schema.GraphQLArgument.newArgument;

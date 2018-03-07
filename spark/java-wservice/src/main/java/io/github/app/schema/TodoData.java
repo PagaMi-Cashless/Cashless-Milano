@@ -1,4 +1,4 @@
-package io.github.app;
+package io.github.app.schema;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
@@ -19,7 +19,8 @@ import java.lang.String;
 import java.util.Map;
 import java.util.HashMap;
 
-class TodoData {
+class TodoData
+{
     static MongoClientURI uri = new MongoClientURI("mongodb://example:example@ds047355.mongolab.com:47355/todo-list-graphql");
     static MongoClient mongoClient = new MongoClient(uri);
     static MongoDatabase db = mongoClient.getDatabase("todo-list-graphql");
