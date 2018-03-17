@@ -1,10 +1,20 @@
 /**
  *  @author Ayoub Chouak (a.chouak)
  *  @brief  User Schema
- *  @todo   Remove
  *
  */
 
 package io.github.app.schema
 
-data class UserSchema(val id: Int, val name: String, val email: String)
+import graphql.GraphQL;
+import graphql.schema.GraphQLObjectType
+import graphql.schema.GraphQLSchema
+
+class UserSchema
+{
+    companion object
+    {
+        val userType: GraphQLObjectType = GraphQLObjectType.newObject().name("User").build()
+        val schema: GraphQLSchema = GraphQLSchema.newSchema().build()
+    }
+}
