@@ -1,13 +1,17 @@
 package io.github.app
 
-import spark.Spark
 import spark.*;
 
 import graphql.GraphQL
 import com.mongodb.util.JSON
+import io.github.app.conf.ApiEndpoint
 import io.github.app.conf.ConfigKey
 import io.github.app.conf.ConfigManager
+import io.github.app.handlers.NexiHandlers
+import io.github.app.schema.PaymentResponseSchema
+import io.github.app.schema.PaymentSchema
 import io.github.app.schema.TodoSchema
+import io.github.app.utils.JsonUtils
 
 object Main
 {
@@ -21,19 +25,33 @@ object Main
         val sparkPort = ConfigManager.getKeyValue(ConfigKey.KEY_SPARK_PORT)
         Spark.port(Integer.parseInt(sparkPort))
 
-        /*
-         * enable CORS in our Spark server. CORS is the acronym for “Cross-origin resource sharing”: a mechanism that allows to access REST resources outside the original domain of the request.
-         * http://www.mastertheboss.com/cool-stuff/create-a-rest-services-layer-with-spark
-         */
+        // Configure static file routes
+        Spark.staticFileLocation("/assets")
+
+        // Enable CORS
         Spark.options("/*") { request, response -> corsHeaderOptions(request, response) }
 
-        Spark.before { request, response -> response.header("Access-Control-Allow-Origin", "*") }
+        Spark.before { _, response -> response.header("Access-Control-Allow-Origin", "*") }
 
         // Configure GraphQL API on path `/graphql`
-        Spark.post("/graphql") { request, response ->
-
+        Spark.post("/graphql") {
+            request, response -> graphQlSerialize(request, response)
         }
 
+        // Configure Nexi Gateway on path `rest/nexi/pay`
+        Spark.post(ApiEndpoint.NEXI_GATEWAY_PAY) { request, _ -> run {
+
+                val schema: PaymentSchema = JsonUtils.parse(request.body(), PaymentSchema().javaClass)
+                val res: PaymentResponseSchema = NexiHandlers.handlePayment(schema)
+
+                JsonUtils.serialize(res)
+            }
+        }
+
+        // After middleware
+        Spark.after(ApiEndpoint.REST_ROOT) {
+            _, response -> response.type("application/json")
+        }
     }
 
     private fun corsHeaderOptions(request: Request, response: Response): String
