@@ -21,6 +21,11 @@ import java.time.*;
 
 object NexiHandlers
 {
+    fun injectBundle(request: Request): String
+    {
+        return "<script type=\"text/javascript\" src=\"${ApiEndpoint.NEXI_JS_BUNDLE}/custom?bundle=HP_FULL&alias=${KeyStore.NEXI_ALIAS}\"></script>"
+    }
+
     fun handlePayment(schema: PaymentSchema): PaymentResponseSchema
     {
         val schemaResponse = PaymentResponseSchema()

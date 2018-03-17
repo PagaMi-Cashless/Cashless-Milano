@@ -26,7 +26,7 @@ object Main
         Spark.port(Integer.parseInt(sparkPort))
 
         // Configure static file routes
-        Spark.staticFileLocation("/assets")
+        Spark.staticFileLocation("/static")
 
         // Enable CORS
         Spark.options("/*") { request, response -> corsHeaderOptions(request, response) }
@@ -39,19 +39,35 @@ object Main
         }
 
         // Configure Nexi Gateway on path `rest/nexi/pay`
-        Spark.post(ApiEndpoint.NEXI_GATEWAY_PAY) { request, _ -> run {
+        Spark.post(ApiEndpoint.NEXI_GATEWAY_PAY) { request, response -> run {
 
-                val schema: PaymentSchema = JsonUtils.parse(request.body(), PaymentSchema().javaClass)
-                val res: PaymentResponseSchema = NexiHandlers.handlePayment(schema)
+                jsonResponse(response)
 
-                JsonUtils.serialize(res)
+                try
+                {
+                    val schema: PaymentSchema = JsonUtils.parse(request.body(), PaymentSchema().javaClass)
+                    val res: PaymentResponseSchema = NexiHandlers.handlePayment(schema)
+                    JsonUtils.serialize(res)
+                }
+                catch (ex: Exception) {
+                    "{}"
+                }
+            }
+        }
+
+        // Configure Nexi Bundle requests on `rest/nexi/pay/bundle`
+        Spark.get(ApiEndpoint.NEXI_GATEWAY_BUNDLE) { request, response -> run {
+
+                htmlResponse(response)
+
+                NexiHandlers.injectBundle(request)
             }
         }
 
         // After middleware
-        Spark.after(ApiEndpoint.REST_ROOT) {
-            _, response -> response.type("application/json")
-        }
+//        Spark.after(ApiEndpoint.REST_ROOT) {
+//            _, response -> response.type("application/json")
+//        }
     }
 
     private fun corsHeaderOptions(request: Request, response: Response): String
@@ -81,4 +97,7 @@ object Main
         // Execute the GraphQL query, serialize and return the packed response
         return JSON.serialize(graphql.execute(request.body()).data)
     }
+
+    private fun jsonResponse(response: Response) = response.type("application/json")
+    private fun htmlResponse(response: Response) = response.type("text/html")
 }
