@@ -24,15 +24,27 @@
               .then(function (response)
               {
                 Console.log(response);
+                var cont = 0;
+                document.getElementById("bod").innerHTML = "<h1>Response</h1><br/>";
+                for (var key in p)
+                {
+                  cont++;
+                  if (p.hasOwnProperty(key))
+                  {
+                    console.log(key + " -> " + p[key]);
+                    document.getElementById("bod").innerHTML+="<b>" + key + ": </b>" + p[key] + "<br/>";
+                  }
+                }
               }).catch(
                 function (error) {
                 Console.log("ERROR");
               });
            }
   </script>
+
 </head>
 
-<body>
+<body id="bod">
 <form class="jumbotron col-lg-7">
   <div class="row">
     <div class="form-group col-sm-4">
