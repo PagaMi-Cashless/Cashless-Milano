@@ -27,7 +27,7 @@ public class PaymentSchema
     @SerializedName("importo")
     public String payImporto;
 
-    @SerializedName("timestamp")
+    @SerializedName("timeStamp")
     public String payTimestamp;
 
     @SerializedName("divisa")

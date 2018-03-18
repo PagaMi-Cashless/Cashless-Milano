@@ -16,8 +16,9 @@ import io.github.app.schema.PaymentResponseSchema
 import io.github.app.schema.PaymentSchema
 import io.github.app.utils.JsonUtils
 import spark.*
-import java.security.*;
-import java.time.*;
+import com.google.common.hash.Hashing
+import java.security.*
+import java.time.*
 
 object NexiHandlers
 {
@@ -31,17 +32,17 @@ object NexiHandlers
         val schemaResponse = PaymentResponseSchema()
 
         // @todo: handle payment and send a JSON response
-        val sha1 = MessageDigest.getInstance("SHA1")
+        val sha1 = Hashing.sha1()
         val nonceHmacInput = "esito=${schema.xPayEsito}idOperazione=${schema.xPayOpId}xpayNonce=${schema.xPayNonce}timeStamp=${schema.xPayTimestamp}${KeyStore.NEXI_HMAC_SECRET}"
-        val nonceHmac = sha1.digest(nonceHmacInput.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8)
+        val nonceHmac = sha1.hashString(nonceHmacInput, Charsets.UTF_8).toString()
 
         //  HMAC Mismatch
         if (nonceHmac != schema.xPayMac)
             throw NexiPaymentException("HMAC Mismatch (Nonce)!")
 
         val timestamp = Instant.now().epochSecond * 1000
-        val hmacInput = "apiKey=${schema.payAlias}codiceTransazione=${schema.payTransactionCode}importo=${schema.payImporto}divisa=${schema.payCurrency}xpayNonce=${schema.xPayNonce}timestamp=$timestamp${KeyStore.NEXI_HMAC_SECRET}"
-        val hmac = sha1.digest(hmacInput.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8)
+        val hmacInput = "apiKey=${schema.payAlias}codiceTransazione=${schema.payTransactionCode}importo=${schema.payImporto}divisa=${schema.payCurrency}xpayNonce=${schema.xPayNonce}timeStamp=${timestamp}${KeyStore.NEXI_HMAC_SECRET}"
+        val hmac = sha1.hashString(hmacInput, Charsets.UTF_8).toString()
 
         // Prepare the payload
         var schemaInternal = PaymentInternalSchema()
@@ -57,10 +58,13 @@ object NexiHandlers
         // Execute the POST request
         var rest: HttpResponse<JsonNode>? = null
 
-        try {
+        try
+        {
+            val schemaInternalJson = JsonUtils.serialize(schemaInternal)
+
             rest = Unirest.post(ApiEndpoint.NEXI_NONCE_PAYMENT)
                     .header("content-type", "application/json")
-                    .body(JsonUtils.serialize(schemaInternal)).asJson()
+                    .body(schemaInternalJson).asJson()
         } catch (ex: UnirestException) {
             throw NexiPaymentException("Error dispatching the transaction request to Nexi!", ex)
         }
@@ -70,7 +74,7 @@ object NexiHandlers
 
         // Compute the HMAC of the response fields
         val responseHmacInput = "esito=${responseInternal.xPayEsito}idOperazione=${responseInternal.xPayOperationId}timeStamp=${responseInternal.xPayTimestamp}${KeyStore.NEXI_HMAC_SECRET}"
-        val responseHmac = sha1.digest(responseHmacInput.toByteArray(Charsets.UTF_8)).toString(Charsets.UTF_8)
+        val responseHmac = sha1.hashString(responseHmacInput, Charsets.UTF_8).toString()
 
         // Mismatch? Oops
         if (responseHmac != responseInternal.xPayHmac)

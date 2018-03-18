@@ -63,11 +63,6 @@ object Main
                 NexiHandlers.injectBundle(request)
             }
         }
-
-        // After middleware
-//        Spark.after(ApiEndpoint.REST_ROOT) {
-//            _, response -> response.type("application/json")
-//        }
     }
 
     private fun corsHeaderOptions(request: Request, response: Response): String
