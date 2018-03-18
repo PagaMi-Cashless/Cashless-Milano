@@ -1,12 +1,9 @@
 package io.github.app.handlers
 
-import com.mashape.unirest.http.HttpMethod
 import com.mashape.unirest.http.HttpResponse
 import com.mashape.unirest.http.JsonNode
 import com.mashape.unirest.http.Unirest
 import com.mashape.unirest.http.exceptions.UnirestException
-import com.mashape.unirest.request.HttpRequest
-import com.mashape.unirest.request.HttpRequestWithBody
 import io.github.app.conf.ApiEndpoint
 import io.github.app.conf.KeyStore
 import io.github.app.exception.NexiPaymentException
@@ -17,7 +14,6 @@ import io.github.app.schema.PaymentSchema
 import io.github.app.utils.JsonUtils
 import spark.*
 import com.google.common.hash.Hashing
-import java.security.*
 import java.time.*
 
 object NexiHandlers

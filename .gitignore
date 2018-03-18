@@ -1,4 +1,4 @@
 .DS_Store
 
-# IntelliJ
-.idea/
+# Build files
+target/
