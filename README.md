@@ -1,4 +1,7 @@
-# Cashless-Milano
+![logo](https://i.imgur.com/3Z1s0tn.png)
+
+# PagaMi
+
 
 ## Idee
 * Bikemi
