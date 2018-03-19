@@ -1,7 +1,6 @@
 ![logo](https://i.imgur.com/3Z1s0tn.png)
 
-# PagaMi
-
+![gif-wallet](https://cdn.dribbble.com/users/1651618/screenshots/4328871/gif_export.gif)
 
 ## Idee
 * Bikemi
