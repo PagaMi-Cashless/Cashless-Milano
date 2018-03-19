@@ -10,7 +10,6 @@ import io.github.app.conf.ConfigManager
 import io.github.app.handlers.NexiHandlers
 import io.github.app.schema.PaymentResponseSchema
 import io.github.app.schema.PaymentSchema
-import io.github.app.schema.TodoSchema
 import io.github.app.utils.JsonUtils
 
 object Main
@@ -81,16 +80,17 @@ object Main
         return "OK"
     }
 
+    // @todo: remove this
     private fun graphQlSerialize(request: Request, response: Response): String
     {
         // Get the schema instance
-        val graphql = GraphQL(TodoSchema.schema)
+        val graphql = null
 
         // Set the response type
         response.type("application/json")
 
         // Execute the GraphQL query, serialize and return the packed response
-        return JSON.serialize(graphql.execute(request.body()).data)
+        return ""
     }
 
     private fun jsonResponse(response: Response) = response.type("application/json")
