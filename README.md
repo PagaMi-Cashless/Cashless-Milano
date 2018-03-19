@@ -1,4 +1,6 @@
-![logo](https://i.imgur.com/3Z1s0tn.png)
+<img src="https://i.imgur.com/3Z1s0tn.png" width="350px">
+
+
 
 ![gif](https://github.com/PagaMi-Cashless/Cashless-Milano/blob/master/gif_export.gif?raw=true)
 
